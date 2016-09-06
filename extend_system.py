@@ -39,6 +39,14 @@ def multiply_bonds(bonds, pbc_check, reprod, nat):
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
                                                    bonds[nb][1] + nat * ((ix + iy * nx) + 1)])
 
+                    if pbc_check[nb][1] == "-x":
+                        if ix == 0:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * nx * (iy + 1)])
+                        else:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * ((ix + iy * nx) - 1)])
+
                     elif pbc_check[nb][1] == "y":
                         if iy == ny-1:
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
