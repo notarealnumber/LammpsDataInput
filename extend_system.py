@@ -55,6 +55,14 @@ def multiply_bonds(bonds, pbc_check, reprod, nat):
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
                                                    bonds[nb][1] + nat * nx * (iy + 1)])
 
+                    elif pbc_check[nb][1] == "-y":
+                        if iy == 0:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * (ix + (ny - 1) * nx)])
+                        else:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * (ix + (iy - 1) * nx)])
+
                     elif pbc_check[nb][1] == "xy":
                         if ix == nx-1 and iy != ny-1:
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
@@ -72,7 +80,7 @@ def multiply_bonds(bonds, pbc_check, reprod, nat):
                     elif pbc_check[nb][1] == "-x-y":
                         if ix == 0 and iy == 0:
                             extended_bonds.append([bonds[nb][0],
-                                                   bonds[nb][1] + (nx * ny - 1) * nat])
+                                                   bonds[nb][1] + nat * (nx * ny - 1)])
                         elif ix != 0 and iy == 0:
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
                                                    bonds[nb][1] + nat * ((ny - 1) * nx + (ix - 1))])
@@ -84,16 +92,21 @@ def multiply_bonds(bonds, pbc_check, reprod, nat):
                                                    bonds[nb][1] + nat * (ix - 1 + (iy - 1) * nx)])
 
                     elif pbc_check[nb][1] == "x-y":
-                        if ix != nx-1 and iy == 0:
+                        if ix < nx-1 and iy == 0:
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
-                                                   bonds[nb][1] + (nx * (ny - 1) + 1 + ix) * nat])
+                                                   bonds[nb][1] + nat * (nx * (ny - 1) + 1 + ix)])
                         if ix == nx-1 and iy == 0:
                             extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
-                                                   bonds[nb][1] + (nx * (ny - 1) + 1 + ix) * nat])
-
-
-
+                                                   bonds[nb][1] + nat * nx * (ny - 1)])
+                        if ix == nx-1 and iy > 0:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * nx * (iy - 1)])
+                        else:
+                            extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
+                                                   bonds[nb][1] + nat * (ix + nx * (iy - 1) + 1)])
 
                 else:
                     extended_bonds.append([bonds[nb][0] + nat * (ix + iy * nx),
                                            bonds[nb][1] + nat * (ix + iy * nx)])
+
+    return extended_bonds
