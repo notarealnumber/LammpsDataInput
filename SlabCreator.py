@@ -12,7 +12,28 @@ def main():
 
     pbc_check = check_pbc_applied(coords, bonds, pbc_box)
     coords_ext = multiply_coords(coords, reprod, pbc_box)
-    multiply_bonds(bonds, pbc_check, reprod, len(coords))
+
+    elements_ext = []
+
+    for frame in range(reprod[0][0]*reprod[0][1]):
+        for elmt in range(len(elements)):
+            elements_ext.append(elements[elmt])
+
+    # print("ccc", len(elements_ext), len(coords_ext))
+    # thefile = "extended.xyz"
+    # xyzfile = open(thefile, "w")
+    # print(len(coords_ext), file=xyzfile)
+    # print("Extended coordinates", file=xyzfile)
+    # for i in range(len(coords_ext)):
+    #     print(elements_ext[i], coords_ext[i, 0], coords_ext[i, 1], coords_ext[i, 2], file=xyzfile)
+
+    bonds_extended = multiply_bonds(bonds, pbc_check, reprod, len(coords))
+    print(angles[354])
+    print(bonds_extended.index([angles[354][1], angles[354][0]]))
+    print(bonds.index([angles[354][1], angles[354][0]]))
+    print(bonds_extended.index([angles[354][1], angles[354][2]]))
+    print(bonds.index([angles[354][1], angles[354][2]]))
+    print(reprod[0][0] * reprod[0][1] * len(bonds), len(bonds_extended))
 
 
 def getInfos():
