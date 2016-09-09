@@ -2,6 +2,7 @@ from read_all import *
 from check_pbc import *
 from extend_system import *
 
+
 def main():
     print("heyho")
     filebase, reprod, pbc_box = getInfos()
@@ -10,30 +11,24 @@ def main():
     bonds, ff_type, charges, angles, dihedrals, \
     impropers, donors, acceptors, nonbonds = readpsf(filebase)
 
-    pbc_check = check_pbc_applied(coords, bonds, pbc_box)
-    coords_ext = multiply_coords(coords, reprod, pbc_box)
+    ## These variables give the number of atoms, angles, bonds etc of the original structure.
+    nat = len(elements)
+    nbonds = len(bonds)
+    nangles = len(angles)
+    ndihed = len(dihedrals)
+    nimprp = len(impropers)
+    ndon = len(donors)
+    nacc = len(acceptors)
+    nnonb = len(nonbonds)
 
-    elements_ext = []
+    coords_ext = extend_coords(coords, elements, ff_type, reprod, pbc_box)
 
-    for frame in range(reprod[0][0]*reprod[0][1]):
-        for elmt in range(len(elements)):
-            elements_ext.append(elements[elmt])
+    # extend_bonds(bonds, coords_ext, reprod, nat, nbonds)
+    # angles_ext = extend_thetas(angles, coords_ext, reprod, nat, nangles)
+    # dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, reprod, nat, ndihed)
+    impropers_ext = extend_dihedrals(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
 
-    # print("ccc", len(elements_ext), len(coords_ext))
-    # thefile = "extended.xyz"
-    # xyzfile = open(thefile, "w")
-    # print(len(coords_ext), file=xyzfile)
-    # print("Extended coordinates", file=xyzfile)
-    # for i in range(len(coords_ext)):
-    #     print(elements_ext[i], coords_ext[i, 0], coords_ext[i, 1], coords_ext[i, 2], file=xyzfile)
-
-    bonds_extended = multiply_bonds(bonds, pbc_check, reprod, len(coords))
-    print(angles[354])
-    print(bonds_extended.index([angles[354][1], angles[354][0]]))
-    print(bonds.index([angles[354][1], angles[354][0]]))
-    print(bonds_extended.index([angles[354][1], angles[354][2]]))
-    print(bonds.index([angles[354][1], angles[354][2]]))
-    print(reprod[0][0] * reprod[0][1] * len(bonds), len(bonds_extended))
+    # print(angles_ext[4558])
 
 
 def getInfos():
