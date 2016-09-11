@@ -1,5 +1,4 @@
 from read_all import *
-from check_pbc import *
 from extend_system import *
 
 
@@ -9,9 +8,9 @@ def main():
 
     elements, coords = readpdb(filebase)
     bonds, ff_type, charges, angles, dihedrals, \
-    impropers, donors, acceptors, nonbonds = readpsf(filebase)
+        impropers, donors, acceptors, nonbonds = readpsf(filebase)
 
-    ## These variables give the number of atoms, angles, bonds etc of the original structure.
+    # These variables give the number of atoms, angles, bonds etc of the original structure.
     nat = len(elements)
     nbonds = len(bonds)
     nangles = len(angles)
@@ -23,12 +22,10 @@ def main():
 
     coords_ext = extend_coords(coords, elements, ff_type, reprod, pbc_box)
 
-    # extend_bonds(bonds, coords_ext, reprod, nat, nbonds)
-    # angles_ext = extend_thetas(angles, coords_ext, reprod, nat, nangles)
-    # dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, reprod, nat, ndihed)
-    impropers_ext = extend_dihedrals(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
-
-    # print(angles_ext[4558])
+    extend_bonds(bonds, coords_ext, pbc_box, reprod, nat, nbonds)
+    angles_ext = extend_thetas(angles, coords_ext, pbc_box, reprod, nat, nangles)
+    dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, pbc_box, reprod, nat, ndihed)
+    impropers_ext = extend_impropers(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
 
 
 def getInfos():
