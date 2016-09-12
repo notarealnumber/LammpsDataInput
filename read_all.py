@@ -35,6 +35,7 @@ def readpsf(basefile):
     bonds = []
     ff_type = []
     charges = []
+    masses = []
     angles = []
     dihedrals = []
     impropers = []
@@ -51,10 +52,11 @@ def readpsf(basefile):
                 nat = int(templist[0][0])
                 print("Number of atoms", nat)
                 for i in range(nat):
-                    atomlist = []
-                    atomlist.append(psf.readline().strip(" ").split())
-                    ff_type.append(atomlist[0][5])
-                    charges.append(float(atomlist[0][6]))
+                    # atomlist = []
+                    atomlist = psf.readline().strip(" ").split()
+                    ff_type.append(atomlist[5])
+                    charges.append(float(atomlist[6]))
+                    masses.append(float(atomlist[7]))
 
             elif '!NBOND:' in templist[0]:
                 nbonds = int(templist[0][0])
@@ -227,4 +229,4 @@ def readpsf(basefile):
                 if nnonb == 0:
                     print("The structure does not contain any non-bonding interactions.")
 
-    return bonds, ff_type, charges, angles, dihedrals, impropers, donors, acceptors, nonbonds
+    return bonds, ff_type, charges, masses, angles, dihedrals, impropers, donors, acceptors, nonbonds

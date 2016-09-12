@@ -1,14 +1,20 @@
 from read_all import *
 from extend_system import *
+from write_lammps_data_file import *
 
 
 def main():
-    print("heyho")
+
     filebase, reprod, pbc_box = getInfos()
 
     elements, coords = readpdb(filebase)
-    bonds, ff_type, charges, angles, dihedrals, \
+    bonds, ff_type, charges, masses, angles, dihedrals, \
         impropers, donors, acceptors, nonbonds = readpsf(filebase)
+
+    types = sorted(list(set(ff_type)))
+    for i in range(len(types)):
+        types[i] = types[i].lower()
+    print(types)
 
     # These variables give the number of atoms, angles, bonds etc of the original structure.
     nat = len(elements)
@@ -22,10 +28,13 @@ def main():
 
     coords_ext = extend_coords(coords, elements, ff_type, reprod, pbc_box)
 
-    extend_bonds(bonds, coords_ext, pbc_box, reprod, nat, nbonds)
+    bonds_ext = extend_bonds(bonds, coords_ext, pbc_box, reprod, nat, nbonds)
     angles_ext = extend_thetas(angles, coords_ext, pbc_box, reprod, nat, nangles)
     dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, pbc_box, reprod, nat, ndihed)
     impropers_ext = extend_impropers(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
+
+    write_lammps_file(coords_ext, bonds_ext, angles_ext, dihedrals_ext, impropers_ext,
+                      ff_type, charges, masses, filebase, reprod, pbc_box, types)
 
 
 def getInfos():

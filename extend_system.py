@@ -1,5 +1,4 @@
 import numpy as np
-from multiprocessing.dummy import Pool as ThreadPool
 
 
 def calc_bond_length(coord1, coord2):
