@@ -5,7 +5,7 @@ from write_lammps_data_file import *
 
 def main():
 
-    filebase, reprod, pbc_box = getInfos()
+    filebase, forcefield, reprod, pbc_box = getInfos()
 
     elements, coords = readpdb(filebase)
     bonds, ff_type, charges, masses, angles, dihedrals, \
@@ -15,6 +15,8 @@ def main():
     for i in range(len(types)):
         types[i] = types[i].lower()
     print(types)
+
+    # get_parms(forcefield, types)
 
     # These variables give the number of atoms, angles, bonds etc of the original structure.
     nat = len(elements)
@@ -26,7 +28,7 @@ def main():
     nacc = len(acceptors)
     nnonb = len(nonbonds)
 
-    coords_ext = extend_coords(coords, elements, ff_type, reprod, pbc_box)
+    coords_ext = extend_coords(coords, elements, ff_type, charges, reprod, pbc_box)
 
     bonds_ext = extend_bonds(bonds, coords_ext, pbc_box, reprod, nat, nbonds)
     angles_ext = extend_thetas(angles, coords_ext, pbc_box, reprod, nat, nangles)
@@ -55,6 +57,9 @@ def getInfos():
     # print("####################################")
     # basename = input("Enter base name (without extension): ")
     basename = "silica_Q3_amorph_4_7OH_0pct_ion"
+    # print("####################################")
+    # ffname = input("Enter base name (without extension): ")
+    ffname = "cvff_interface_v1_5.frc"
     #
     # print("####################################")
     # print(" ")
@@ -67,7 +72,7 @@ def getInfos():
 
     box = np.array(box)
 
-    return basename, reprod, box
+    return basename, ffname, reprod, box
 
 
 main()

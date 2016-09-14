@@ -86,11 +86,11 @@ def get_new_index(coords, ind_unk, ind_knwn, current_cell, nx, ny, nat, box):
         for box_y in range(-1, 2):
             for box_x in range(-1, 2):
                 tempcoord = [
-                    coords[ind_unk + iadd * nat - 1][2] + box[0, 0] * nx * box_x,
-                    coords[ind_unk + iadd * nat - 1][3] + box[0, 1] * ny * box_y,
-                    coords[ind_unk + iadd * nat - 1][4]
+                    coords[ind_unk + iadd * nat - 1][3] + box[0, 0] * nx * box_x,
+                    coords[ind_unk + iadd * nat - 1][4] + box[0, 1] * ny * box_y,
+                    coords[ind_unk + iadd * nat - 1][5]
                 ]
-                check_length = calc_bond_length(coords[ind_knwn][2:5], tempcoord)
+                check_length = calc_bond_length(coords[ind_knwn][3:6], tempcoord)
                 if check_length < 5.0:
                     ind_extended = ind_unk + iadd * nat
                     success = True
@@ -100,10 +100,9 @@ def get_new_index(coords, ind_unk, ind_knwn, current_cell, nx, ny, nat, box):
                     return ind_extended
 
 
-def extend_coords(coords, elements, ff_type, reprod, box):
+def extend_coords(coords, elements, ff_type, charges, reprod, box):
     nat = len(coords)
     extended_coords = []
-    # extended_coords = np.full((reprod[0][0] * reprod[0][1] * nat, 3), 0.0)
 
     print(3*box[0, 0], 6*box[0, 1], box[0, 2])
     print(box[0, 0], box[0, 1], box[0, 2])
@@ -111,7 +110,7 @@ def extend_coords(coords, elements, ff_type, reprod, box):
     for iy in range(reprod[0][1]):
         for ix in range(reprod[0][0]):
             for k in range(nat):
-                extended_coords.append([elements[k], ff_type[k],
+                extended_coords.append([elements[k], ff_type[k], charges[k],
                                         coords[k, 0] + box[0, 0] * ix,
                                         coords[k, 1] + box[0, 1] * iy,
                                         coords[k, 2]])
@@ -155,7 +154,7 @@ def extend_bonds(bonds, coords, box, reprod, nat, nbonds):
                 bond1 = ind_orig1 + addind - 1
                 bond2 = ind_orig2 + addind - 1
 
-                bond_length = calc_bond_length(coords[bond1][2:5], coords[bond2][2:5])
+                bond_length = calc_bond_length(coords[bond1][3:6], coords[bond2][3:6])
 
                 if bond_length < 5.0:
                     celled += 1
@@ -203,8 +202,8 @@ def extend_thetas(angles, coords, box, reprod, nat, nangles):
                 iangle2 = ind_orig2 + addind - 1
                 iangle3 = ind_orig3 + addind - 1
 
-                bond_length1 = calc_bond_length(coords[iangle2][2:5], coords[iangle1][2:5])
-                bond_length2 = calc_bond_length(coords[iangle2][2:5], coords[iangle3][2:5])
+                bond_length1 = calc_bond_length(coords[iangle2][3:6], coords[iangle1][3:6])
+                bond_length2 = calc_bond_length(coords[iangle2][3:6], coords[iangle3][3:6])
 
                 if bond_length1 < 5.0 and bond_length2 < 5.0:
                     cntr1 += 1
@@ -278,21 +277,21 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                 idhd4 = ind_orig4 + addind - 1
                 # idhdX has to be reduced by 1 in order to get the correct coordinates from coords.
 
-                bond_length1 = calc_bond_length(coords[idhd1][2:5],
-                                                coords[idhd2][2:5])
-                bond_length2 = calc_bond_length(coords[idhd3][2:5],
-                                                coords[idhd2][2:5])
-                bond_length3 = calc_bond_length(coords[idhd4][2:5],
-                                                coords[idhd3][2:5])
+                bond_length1 = calc_bond_length(coords[idhd1][3:6],
+                                                coords[idhd2][3:6])
+                bond_length2 = calc_bond_length(coords[idhd3][3:6],
+                                                coords[idhd2][3:6])
+                bond_length3 = calc_bond_length(coords[idhd4][3:6],
+                                                coords[idhd3][3:6])
 
                 if bond_length1 < 5.0 and bond_length2 < 5.0 and bond_length3 < 5.0:
                     # b1, b2, b3 ok
                     cntr1 += 1
                     extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, idhd3 + 1, idhd4 + 1],
-                                             [coords[idhd1][1].lower(),
-                                              coords[idhd2][1].lower(),
-                                              coords[idhd3][1].lower(),
-                                              coords[idhd4][1].lower()]])
+                                               [coords[idhd1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[idhd3][1].lower(),
+                                                coords[idhd4][1].lower()]])
                     continue
 
                 if bond_length1 > 5.0:
@@ -300,10 +299,10 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                     cntr2 += 1
                     new_ind = get_new_index(coords, ind_orig1, idhd2, ix + iy * nx, nx, ny, nat, box)
                     extended_dihedrals.append([[new_ind, idhd2 + 1, idhd3 + 1, idhd4 + 1],
-                                             [coords[new_ind - 1][1].lower(),
-                                              coords[idhd2][1].lower(),
-                                              coords[idhd3][1].lower(),
-                                              coords[idhd4][1].lower()]])
+                                               [coords[new_ind - 1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[idhd3][1].lower(),
+                                                coords[idhd4][1].lower()]])
                     continue
 
                 if bond_length2 > 5.0:
@@ -312,10 +311,10 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                     new_ind1 = get_new_index(coords, ind_orig3, idhd2, ix + iy * nx, nx, ny, nat, box)
                     new_ind2 = get_new_index(coords, ind_orig4, new_ind1 - 1, ix + iy * nx, nx, ny, nat, box)
                     extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, new_ind1, new_ind2],
-                                             [coords[idhd1][1].lower(),
-                                              coords[idhd2][1].lower(),
-                                              coords[new_ind1 - 1][1].lower(),
-                                              coords[new_ind2 - 1][1].lower()]])
+                                               [coords[idhd1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[new_ind1 - 1][1].lower(),
+                                                coords[new_ind2 - 1][1].lower()]])
                     continue
 
                 if bond_length3 > 5.0 > bond_length2:
@@ -323,10 +322,10 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                     # b1, b2 ok; b3 not. index of atom 4 has to be changed.
                     new_ind = get_new_index(coords, ind_orig4, idhd3, ix + iy * nx, nx, ny, nat, box)
                     extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, idhd3 + 1, new_ind],
-                                             [coords[idhd1][1].lower(),
-                                              coords[idhd2][1].lower(),
-                                              coords[idhd3][1].lower(),
-                                              coords[new_ind - 1][1].lower()]])
+                                               [coords[idhd1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[idhd3][1].lower(),
+                                                coords[new_ind - 1][1].lower()]])
                     continue
 
     print(cntr1, cntr2, cntr3, cntr4, cntr1 + cntr2 + cntr3 + cntr4, len(extended_dihedrals), nx*ny*len(dihedrals))
@@ -375,12 +374,12 @@ def extend_impropers(impropers, coords, box, reprod, nat, nimprop):
                 impr4 = ind_orig4 + addind - 1
                 # idhedX has to be reduced by 1 in order to get the correct coordinates from coords.
 
-                bond_length1 = calc_bond_length(coords[impr1][2:5],
-                                                coords[impr2][2:5])
-                bond_length2 = calc_bond_length(coords[impr3][2:5],
-                                                coords[impr2][2:5])
-                bond_length3 = calc_bond_length(coords[impr4][2:5],
-                                                coords[impr2][2:5])
+                bond_length1 = calc_bond_length(coords[impr1][3:6],
+                                                coords[impr2][3:6])
+                bond_length2 = calc_bond_length(coords[impr3][3:6],
+                                                coords[impr2][3:6])
+                bond_length3 = calc_bond_length(coords[impr4][3:6],
+                                                coords[impr2][3:6])
                 # print(bond_length1, bond_length2, bond_length3)
 
                 if bond_length1 < 5.0 and bond_length2 < 5.0 and bond_length3 < 5.0:
