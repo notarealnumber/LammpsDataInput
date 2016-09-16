@@ -103,8 +103,9 @@ def get_new_index(coords, ind_unk, ind_knwn, current_cell, nx, ny, nat, box):
 def extend_coords(coords, elements, ff_type, charges, reprod, box):
     nat = len(coords)
     extended_coords = []
+    nx, ny = reprod[0][:]
 
-    print(3*box[0, 0], 6*box[0, 1], box[0, 2])
+    print(nx*box[0, 0], ny*box[0, 1], box[0, 2])
     print(box[0, 0], box[0, 1], box[0, 2])
 
     for iy in range(reprod[0][1]):
@@ -187,17 +188,18 @@ def extend_thetas(angles, coords, box, reprod, nat, nangles):
     extended_angles = []
     nx, ny = reprod[0][:]
 
-    cntr1 = cntr2 = cntr3 = 0
+    cntr1 = cntr2 = cntr3 = cntr4 = 0
 
     for iy in range(ny):  # y-direction
         for ix in range(nx):  # x direction
             addind = nat * (ix + iy * nx)
             for nang in range(nangles):
-                # -1 in order to get the correct element in coords.
+                # ind_orig saves the index as read from the psf. The atom index starts with 1.
                 ind_orig1 = angles[nang][0]
                 ind_orig2 = angles[nang][1]
                 ind_orig3 = angles[nang][2]
 
+                # -1 in order to get the correct element in coords.
                 iangle1 = ind_orig1 + addind - 1
                 iangle2 = ind_orig2 + addind - 1
                 iangle3 = ind_orig3 + addind - 1
@@ -213,22 +215,32 @@ def extend_thetas(angles, coords, box, reprod, nat, nangles):
                                             coords[iangle3][1].lower()]])
                     continue
 
-                if bond_length1 > 5.0:
-                    cntr2 += 1
-                    new_ind = get_new_index(coords, ind_orig1, iangle2, ix + iy * nx, nx, ny, nat, box)
-                    extended_angles.append([[new_ind, iangle2 + 1, iangle3 + 1],
-                                           [coords[new_ind - 1][1].lower(),
+                elif bond_length1 > 5.0 and bond_length2 > 5.0:
+                    cntr4 += 1
+                    new_ind1 = get_new_index(coords, ind_orig1, iangle2, ix + iy * nx, nx, ny, nat, box)
+                    new_ind2 = get_new_index(coords, ind_orig3, iangle2, ix + iy * nx, nx, ny, nat, box)
+                    extended_angles.append([[new_ind1, iangle2 + 1, new_ind2],
+                                           [coords[new_ind1 - 1][1].lower(),
                                             coords[iangle2][1].lower(),
                                             coords[iangle3][1].lower()]])
                     continue
 
-                if bond_length2 > 5.0:
+                elif bond_length1 > 5.0:
+                    cntr2 += 1
+                    new_ind1 = get_new_index(coords, ind_orig1, iangle2, ix + iy * nx, nx, ny, nat, box)
+                    extended_angles.append([[new_ind1, iangle2 + 1, iangle3 + 1],
+                                           [coords[new_ind1 - 1][1].lower(),
+                                            coords[iangle2][1].lower(),
+                                            coords[iangle3][1].lower()]])
+                    continue
+
+                elif bond_length2 > 5.0:
                     cntr3 += 1
-                    new_ind = get_new_index(coords, ind_orig3, iangle2, ix + iy * nx, nx, ny, nat, box)
-                    extended_angles.append([[iangle1 + 1, iangle2 + 1, new_ind],
+                    new_ind2 = get_new_index(coords, ind_orig3, iangle2, ix + iy * nx, nx, ny, nat, box)
+                    extended_angles.append([[iangle1 + 1, iangle2 + 1, new_ind2],
                                            [coords[iangle1][1].lower(),
                                             coords[iangle2][1].lower(),
-                                            coords[new_ind - 1][1].lower()]])
+                                            coords[new_ind2 - 1][1].lower()]])
                     continue
 
     print(cntr1, cntr2, cntr3, cntr1 + cntr2 + cntr3, len(extended_angles), nx*ny*len(angles))
@@ -260,7 +272,7 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
 
     extended_dihedrals = []
     nx, ny = reprod[0][:]
-    cntr1 = cntr2 = cntr3 = cntr4 = 0
+    cntr1 = cntr2 = cntr3 = cntr4 = cntr5 = cntr6 = 0
 
     for iy in range(ny):  # y-direction
         for ix in range(nx):  # x direction
@@ -294,7 +306,46 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                                                 coords[idhd4][1].lower()]])
                     continue
 
-                if bond_length1 > 5.0:
+                elif bond_length1 > 5.0 and bond_length2 > 5.0 > bond_length3:
+                    cntr5 += 1
+                    # b3 ok; b1, b2 not. Atom 4 has to be changed as well.
+                    new_ind1 = get_new_index(coords, ind_orig1, idhd2, ix + iy * nx, nx, ny, nat, box)
+                    new_ind2 = get_new_index(coords, ind_orig3, idhd2, ix + iy * nx, nx, ny, nat, box)
+                    new_ind3 = get_new_index(coords, ind_orig4, new_ind2 - 1, ix + iy * nx, nx, ny, nat, box)
+                    extended_dihedrals.append([[new_ind1, idhd2 + 1, new_ind2, new_ind3],
+                                               [coords[new_ind1 - 1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[new_ind2 - 1][1].lower(),
+                                                coords[new_ind3 - 1][1].lower()]])
+                    continue
+
+                elif bond_length1 > 5.0 and bond_length3 > 5.0 > bond_length2:
+                    cntr4 += 1
+                    # b2 ok; b1 and b3 not. indices of atoms 1 and 4 have to be changed.
+                    new_ind1 = get_new_index(coords, ind_orig1, idhd2, ix + iy * nx, nx, ny, nat, box)
+                    new_ind2 = get_new_index(coords, ind_orig4, idhd3, ix + iy * nx, nx, ny, nat, box)
+                    extended_dihedrals.append([[new_ind1, idhd2 + 1, idhd3 + 1, new_ind2],
+                                               [coords[new_ind1 - 1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[idhd3][1].lower(),
+                                                coords[new_ind2 - 1][1].lower()]])
+                    continue
+
+                elif bond_length2 > 5.0 and bond_length3 > 5.0 > bond_length1:
+                    cntr6 += 1
+                    # b1 ok; b2 and b3 not. indices of atoms 3 and 4 have to be changed.
+                    # Care has to be taken, since index of atom 4 will depend on the new
+                    # index of atom 3.
+                    new_ind1 = get_new_index(coords, ind_orig3, idhd2, ix + iy * nx, nx, ny, nat, box)
+                    new_ind2 = get_new_index(coords, ind_orig4, new_ind1 - 1, ix + iy * nx, nx, ny, nat, box)
+                    extended_dihedrals.append([[new_ind1, idhd2 + 1, idhd3 + 1, new_ind2],
+                                               [coords[idhd1][1].lower(),
+                                                coords[idhd2][1].lower(),
+                                                coords[new_ind1 - 1][1].lower(),
+                                                coords[new_ind2 - 1][1].lower()]])
+                    continue
+
+                elif bond_length1 > 5.0:
                     # b2, b3 ok; b1 not. Atom 1 has to be changed.
                     cntr2 += 1
                     new_ind = get_new_index(coords, ind_orig1, idhd2, ix + iy * nx, nx, ny, nat, box)
@@ -305,9 +356,10 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                                                 coords[idhd4][1].lower()]])
                     continue
 
-                if bond_length2 > 5.0:
+                elif bond_length2 > 5.0:
                     cntr3 += 1
-                    # b1, b3 ok; b2 not. Atom 3 has to be changed.
+                    # b1, b3 ok; b2 not. Indices of atoms 3  and 4 have to be changed since atom 4 index
+                    # depends on the new index on atom 3
                     new_ind1 = get_new_index(coords, ind_orig3, idhd2, ix + iy * nx, nx, ny, nat, box)
                     new_ind2 = get_new_index(coords, ind_orig4, new_ind1 - 1, ix + iy * nx, nx, ny, nat, box)
                     extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, new_ind1, new_ind2],
@@ -317,9 +369,9 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                                                 coords[new_ind2 - 1][1].lower()]])
                     continue
 
-                if bond_length3 > 5.0 > bond_length2:
-                    cntr4 += 1
-                    # b1, b2 ok; b3 not. index of atom 4 has to be changed.
+                elif bond_length3 > 5.0:
+                    cntr3 += 1
+                    # b1, b2 ok; b3 not. Atom 4 has to be changed.
                     new_ind = get_new_index(coords, ind_orig4, idhd3, ix + iy * nx, nx, ny, nat, box)
                     extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, idhd3 + 1, new_ind],
                                                [coords[idhd1][1].lower(),

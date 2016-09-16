@@ -33,10 +33,10 @@ def main():
     bonds_ext = extend_bonds(bonds, coords_ext, pbc_box, reprod, nat, nbonds)
     angles_ext = extend_thetas(angles, coords_ext, pbc_box, reprod, nat, nangles)
     dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, pbc_box, reprod, nat, ndihed)
-    impropers_ext = extend_impropers(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
+    # impropers_ext = extend_impropers(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
 
-    write_lammps_file(coords_ext, bonds_ext, angles_ext, dihedrals_ext, impropers_ext,
-                      ff_type, charges, masses, filebase, reprod, pbc_box, types)
+    write_lammps_file(coords_ext, bonds_ext, angles_ext, dihedrals_ext, ff_type,
+                      charges, masses, filebase, reprod, pbc_box, types)
 
 
 def getInfos():
@@ -50,7 +50,7 @@ def getInfos():
     """
     reprod = []
     box = []
-    reprod.append([3, 6])
+    reprod.append([15, 15])
     box.append([40.3148, 41.4320, 53.6079])
 
     # print(" ")
