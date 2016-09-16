@@ -453,7 +453,6 @@ def extend_impropers(impropers, coords, box, reprod, nat, nimprop):
                                               coords[impr2][1].lower(),
                                               coords[impr3][1].lower(),
                                               coords[impr4][1].lower()]])
-                    continue
 
                 if bond_length2 > 5.0:
                     cntr3 += 1
@@ -464,7 +463,6 @@ def extend_impropers(impropers, coords, box, reprod, nat, nimprop):
                                               coords[impr2][1].lower(),
                                               coords[new_ind - 1][1].lower(),
                                               coords[impr4][1].lower()]])
-                    continue
 
                 if bond_length3 > 5.0:
                     cntr4 += 1
@@ -475,6 +473,5 @@ def extend_impropers(impropers, coords, box, reprod, nat, nimprop):
                                               coords[impr2][1].lower(),
                                               coords[impr3][1].lower(),
                                               coords[new_ind - 1][1].lower()]])
-                    continue
 
     return extended_improps
