@@ -149,13 +149,13 @@ def write_lammps_file_periodic(coords, bonds, angles, dihedrals, ff_type,
     for ndhd in dihedrals:
         current_dhd = 0
         dhd_type = ndhd[1][0] + "-" + ndhd[1][1] + "-" + ndhd[1][2] + "-" + ndhd[1][3]
-        if dhd_type == "oc23-sc4-oc23-sc4":
+        if dhd_type == "oc23-sc4-oc23-sc4" or dhd_type == "sc4-oc23-sc4-oc23":
             current_dhd = 1
-        elif dhd_type == "oc24-sc4-oc23-sc4":
+        elif dhd_type == "oc24-sc4-oc23-sc4" or dhd_type == "sc4-oc23-sc4-oc24":
             current_dhd = 2
-        elif dhd_type == "oc23-sc4-oc24-hoy":
+        elif dhd_type == "oc23-sc4-oc24-hoy" or dhd_type == "hoy-oc24-sc4-oc23":
             current_dhd = 3
-        elif dhd_type == "oc24-sc4-oc24-hoy":
+        elif dhd_type == "oc24-sc4-oc24-hoy" or dhd_type == "hoy-oc24-sc4-oc24":
             current_dhd = 4
         print("{0:>9}".format(n), "{0:>4}".format(current_dhd),
               "{0:>9}".format(ndhd[0][0]),

@@ -340,7 +340,7 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                     new_ind2 = get_new_index(coords, ind_orig4, new_ind1 - 1, ix + iy * nx, nx, ny, nat, box)
                     if new_ind2 is None or new_ind1 is None:
                         print(new_ind1, new_ind2, ind_orig1, ind_orig2, ind_orig3, ind_orig4)
-                    extended_dihedrals.append([[new_ind1, idhd2 + 1, idhd3 + 1, new_ind2],
+                    extended_dihedrals.append([[idhd1 + 1, idhd2 + 1, new_ind1, new_ind2],
                                                [coords[idhd1][1].lower(),
                                                 coords[idhd2][1].lower(),
                                                 coords[new_ind1 - 1][1].lower(),
