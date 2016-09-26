@@ -38,10 +38,16 @@ def readpdb(basefile):
         for line in ins:
             templist = line.strip(" ").split()
             if templist[0] == "ATOM":
-                elements.append(templist[0][2])
-                x = float(templist[5])
-                y = float(templist[6])
-                z = float(templist[7])
+                temp_coords = []
+                for i in range(len(templist)):
+                    try:
+                        temp_coords.append(float(templist[i]))
+                    except:
+                        pass
+                elements.append(templist[2])
+                x = temp_coords[2]
+                y = temp_coords[3]
+                z = temp_coords[4]
                 coords.append([x, y, z])
 
     coords = np.array(coords)
@@ -80,7 +86,7 @@ def readpsf(basefile):
                     charges.append(float(atomlist[6]))
                     masses.append(float(atomlist[7]))
 
-            elif '!NBOND:' in templist:
+            elif '!NBOND:' in templist or '!NBOND' in templist:
                 nbonds = int(templist[0])
                 if nbonds == 0:
                     print("The structure does not contain any bonds.")
@@ -115,7 +121,7 @@ def readpsf(basefile):
                         bond2 = int(bondlist[(nb*2)+1])
                         bonds.append([bond1, bond2])
 
-            elif '!NTHETA:' in templist:
+            elif '!NTHETA:' in templist or '!NTHETA' in templist:
                 nangle = int(templist[0])
                 if nangle == 0:
                     print("The structure does not contain any bonding angles.")
@@ -155,100 +161,90 @@ def readpsf(basefile):
                         angles.append([angle1, angle2, angle3])
                         # angles.append(thetalist[0][nth*3:(nth*3)+3])
 
-            elif '!NPHI:' in templist:
+            elif '!NPHI:' in templist or '!NPHI' in templist:
                 nphi = int(templist[0])
                 if nphi == 0:
                     print("The structure does not contain any dihedrals.")
                 else:
                     print("Number of dihedrals", nphi)
-                    philist = []
-                    philist.append(psf.readline().strip(" ").split())
-                    phis_per_line = int(len(philist[0][:])/4)
+                    philist = psf.readline().strip(" ").split()
+                    phis_per_line = int(len(philist)/4)
                     lines2read = int(np.ceil(nphi / phis_per_line))
                     for nph in range(phis_per_line):
-                        phi1 = int(philist[0][nph*4])
-                        phi2 = int(philist[0][nph*4+1])
-                        phi3 = int(philist[0][nph*4+2])
-                        phi4 = int(philist[0][nph*4+3])
+                        phi1 = int(philist[nph*4])
+                        phi2 = int(philist[nph*4+1])
+                        phi3 = int(philist[nph*4+2])
+                        phi4 = int(philist[nph*4+3])
                         dihedrals.append([phi1, phi2, phi3, phi4])
-                        # dihedrals.append(philist[0][nph*4:(nph*4)+4])
 
                     for i in range(lines2read-2):
-                        philist.pop()
-                        philist.append(psf.readline().strip(" ").split())
+                        philist = psf.readline().strip(" ").split()
                         for nph in range(phis_per_line):
-                            phi1 = int(philist[0][nph*4])
-                            phi2 = int(philist[0][nph*4+1])
-                            phi3 = int(philist[0][nph*4+2])
-                            phi4 = int(philist[0][nph*4+3])
+                            phi1 = int(philist[nph*4])
+                            phi2 = int(philist[nph*4+1])
+                            phi3 = int(philist[nph*4+2])
+                            phi4 = int(philist[nph*4+3])
                             dihedrals.append([phi1, phi2, phi3, phi4])
-                            # dihedrals.append(philist[0][nph*4:(nph*4)+4])
 
-                    philist.pop()
-                    philist.append(psf.readline().strip(" ").split())
-                    phis_per_line = int(len(philist[0][:])/4)
+                    philist = psf.readline().strip(" ").split()
+                    phis_per_line = int(len(philist)/4)
                     print("The last line contains", phis_per_line, "dihedrals.")
-                    for nth in range(phis_per_line):
-                        phi1 = int(philist[0][nph*4])
-                        phi2 = int(philist[0][nph*4+1])
-                        phi3 = int(philist[0][nph*4+2])
-                        phi4 = int(philist[0][nph*4+3])
+                    for nph in range(phis_per_line):
+                        phi1 = int(philist[nph*4])
+                        phi2 = int(philist[nph*4+1])
+                        phi3 = int(philist[nph*4+2])
+                        phi4 = int(philist[nph*4+3])
                         dihedrals.append([phi1, phi2, phi3, phi4])
-                        # dihedrals.append(philist[0][nph*4:(nph*4)+4])
 
-            elif '!NIMPHI:' in templist:
+            elif '!NIMPHI:' in templist or '!NIMPHI' in templist:
                 nimpr = int(templist[0])
                 if nimpr == 0:
                     print("The structure does not contain any impropers.")
-                print("Number of impropers:", nimpr)
-                imprlist = psf.readline().strip(" ").split()
-                imprs_per_line = int(len(imprlist)/4)
-                lines2read = int(np.ceil(nimpr / imprs_per_line))
-                for nimp in range(imprs_per_line):
-                    impr1 = int(imprlist[nimp*4])
-                    impr2 = int(imprlist[nimp*4+1])
-                    impr3 = int(imprlist[nimp*4+2])
-                    impr4 = int(imprlist[nimp*4+3])
-                    impropers.append([impr1, impr2, impr3, impr4])
-
-                for i in range(lines2read-2):
-                    # imprlist.pop()
+                else:
+                    print("Number of impropers:", nimpr)
                     imprlist = psf.readline().strip(" ").split()
-                    # imprlist.append(psf.readline().strip(" ").split())
+                    imprs_per_line = int(len(imprlist)/4)
+                    lines2read = int(np.ceil(nimpr / imprs_per_line))
                     for nimp in range(imprs_per_line):
                         impr1 = int(imprlist[nimp*4])
                         impr2 = int(imprlist[nimp*4+1])
                         impr3 = int(imprlist[nimp*4+2])
                         impr4 = int(imprlist[nimp*4+3])
                         impropers.append([impr1, impr2, impr3, impr4])
-                        # impropers.append(imprlist[0][nimp*4:(nimp*4)+4])
 
-                # imprlist.pop()
-                imprlist = psf.readline().strip(" ").split()
-                # imprlist.append(psf.readline().strip(" ").split())
-                imprs_per_line = int(len(imprlist[0][:])/4)
-                print("The last line contains", imprs_per_line, "impropers.")
-                for nimp in range(imprs_per_line):
-                    impr1 = int(imprlist[nimp*4])
-                    impr2 = int(imprlist[nimp*4+1])
-                    impr3 = int(imprlist[nimp*4+2])
-                    impr4 = int(imprlist[nimp*4+3])
-                    impropers.append([impr1, impr2, impr3, impr4])
-                    # impropers.append(imprlist[0][nimp*4:(nimp*4)+4])
+                    for i in range(lines2read-2):
+                        imprlist = psf.readline().strip(" ").split()
+                        for nimp in range(imprs_per_line):
+                            impr1 = int(imprlist[nimp*4])
+                            impr2 = int(imprlist[nimp*4+1])
+                            impr3 = int(imprlist[nimp*4+2])
+                            impr4 = int(imprlist[nimp*4+3])
+                            impropers.append([impr1, impr2, impr3, impr4])
 
-            elif '!NDON:' in templist:
+                    imprlist = psf.readline().strip(" ").split()
+                    imprs_per_line = int(len(imprlist[0][:])/4)
+                    print("The last line contains", imprs_per_line, "impropers.")
+                    for nimp in range(imprs_per_line):
+                        impr1 = int(imprlist[nimp*4])
+                        impr2 = int(imprlist[nimp*4+1])
+                        impr3 = int(imprlist[nimp*4+2])
+                        impr4 = int(imprlist[nimp*4+3])
+                        impropers.append([impr1, impr2, impr3, impr4])
+
+            elif '!NDON:' in templist or '!NDON' in templist:
                 ndon = int(templist[0])
                 if ndon == 0:
                     print("The structure does not contain any H-bond donors.")
 
-            elif '!NACC:' in templist:
+            elif '!NACC:' in templist or '!NACC' in templist:
                 nacc = int(templist[0])
                 if nacc == 0:
                     print("The structure does not contain any H-bond acceptors.")
 
-            elif '!NNB' in templist:
+            elif '!NNB:' in templist or '!NNB' in templist:
                 nnonb = int(templist[0])
                 if nnonb == 0:
                     print("The structure does not contain any non-bonding interactions.")
 
+    print("We have:", len(bonds), "bonds;", len(angles), "angles;", len(dihedrals), "dihedrals.")
     return bonds, ff_type, charges, masses, angles, dihedrals, impropers, donors, acceptors, nonbonds

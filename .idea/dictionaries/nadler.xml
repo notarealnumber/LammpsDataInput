@@ -5,8 +5,26 @@
       <w>basefile</w>
       <w>coords</w>
       <w>filebase</w>
+      <w>ibond</w>
+      <w>idihed</w>
+      <w>imprlist</w>
+      <w>imprs</w>
+      <w>itype</w>
+      <w>lammps</w>
+      <w>nbond</w>
+      <w>ndihedrals</w>
+      <w>nimphi</w>
+      <w>nimpr</w>
+      <w>nimpropers</w>
+      <w>nonbonds</w>
+      <w>nphi</w>
+      <w>ntheta</w>
+      <w>ntype</w>
+      <w>outname</w>
       <w>parms</w>
       <w>pdbfile</w>
+      <w>philist</w>
+      <w>readpdb</w>
       <w>readpsf</w>
       <w>reprod</w>
       <w>templist</w>

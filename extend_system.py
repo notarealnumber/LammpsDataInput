@@ -80,8 +80,8 @@ def get_new_index(coords, ind_unk, ind_knwn, current_cell, nx, ny, nat, box):
 
     ind_extended = 0
     for iadd in range(nx * ny):
-        if iadd == current_cell:
-            continue
+        # if iadd == current_cell:
+        #     continue
         success = False
         for box_y in range(-1, 2):
             for box_x in range(-1, 2):
@@ -95,7 +95,7 @@ def get_new_index(coords, ind_unk, ind_knwn, current_cell, nx, ny, nat, box):
                     ind_extended = ind_unk + iadd * nat
                     success = True
                 if success:
-                    if ind_extended is None:
+                    if ind_extended == 0:
                         print(box_x, box_y, tempcoord)
                     return ind_extended
 
@@ -338,6 +338,8 @@ def extend_dihedrals(dihedrals, coords, box, reprod, nat, ndihed):
                     # index of atom 3.
                     new_ind1 = get_new_index(coords, ind_orig3, idhd2, ix + iy * nx, nx, ny, nat, box)
                     new_ind2 = get_new_index(coords, ind_orig4, new_ind1 - 1, ix + iy * nx, nx, ny, nat, box)
+                    if new_ind2 is None or new_ind1 is None:
+                        print(new_ind1, new_ind2, ind_orig1, ind_orig2, ind_orig3, ind_orig4)
                     extended_dihedrals.append([[new_ind1, idhd2 + 1, idhd3 + 1, new_ind2],
                                                [coords[idhd1][1].lower(),
                                                 coords[idhd2][1].lower(),
