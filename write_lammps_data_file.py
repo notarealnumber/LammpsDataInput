@@ -20,8 +20,7 @@ def write_lammps_file_periodic(coords, bonds, angles, dihedrals, ff_type,
     print("   ", nbonds, " bonds", file=outname)
     print("   ", nangles, " angles", file=outname)
     print("   ", ndihedrals, " dihedrals", file=outname)
-    print("    0  impropers", file=outname)
-    # print("   ", nimpropers, " impropers", file=outname)
+    print("   0 impropers", file=outname)
     print("", file=outname)
     # How many bond types, angle types, etc
     print("   4 atom types", file=outname)
@@ -46,16 +45,16 @@ def write_lammps_file_periodic(coords, bonds, angles, dihedrals, ff_type,
     print("", file=outname)
     print("Pair Coeffs # lj/cut/coul/long", file=outname)
     print("", file=outname)
-    print("   1   0.0930001390   3.6972284612 # sc4", file=outname)
-    print("   2   0.0540006496   3.0914157928 # oc23", file=outname)
-    print("   3   0.1220010554   3.0914166375 # oc24", file=outname)
-    print("   4   0.0149825188   0.9666679938 # hoy", file=outname)
+    print("   1   0.0930001390   4.15 # sc4", file=outname)
+    print("   2   0.0540006496   3.47 # oc23", file=outname)
+    print("   3   0.1220010554   3.47 # oc24", file=outname)
+    print("   4   0.0149825188   1.085 # hoy", file=outname)
     print("", file=outname)
     print("Bond Coeffs # harmonic", file=outname)
     print("", file=outname)
     print("  1   285.0000     1.6800  #  sc4-oc23", file=outname)
     print("  2   285.0000     1.6800  #  sc4-oc24", file=outname)
-    print("  3   495.0000     0.9450  #  oc23-hoy", file=outname)
+    print("  3   495.0000     0.9450  #  oc24-hoy", file=outname)
     print("", file=outname)
     print("Angle Coeffs # harmonic", file=outname)
     print("", file=outname)
@@ -99,18 +98,24 @@ def write_lammps_file_periodic(coords, bonds, angles, dihedrals, ff_type,
     n = 1
     for nb in bonds:
         current_bond = 0
-        if "sc4" in nb[1] and "oc23" in nb[1]:
+        bond_type = nb[1][0] + nb[1][1]
+        if bond_type == "sc4oc23" or bond_type == "oc23sc4":
+            # "sc4" in nb[1] and "oc23" in nb[1]:
             current_bond = 1
-        elif "sc4" in nb[1] and "oc24" in nb[1]:
+        elif bond_type == "sc4oc24" or bond_type == "oc24sc4":
+            # "sc4" in nb[1] and "oc24" in nb[1]:
             current_bond = 2
-        elif "hoy" in nb[1] and "oc23" in nb[1]:
-            current_bond = 3
-        # elif "hoy" in nb[1] and "oc24" in nb[1]:
+        # elif "hoy" in nb[1] and "oc23" in nb[1]:
         #     current_bond = 3
+        elif bond_type == "hoyoc24" or bond_type == "oc24hoy":
+        # elif "hoy" in nb[1] and "oc24" in nb[1]:
+            current_bond = 3
         print("{0:>9}".format(n), "{0:>4}".format(current_bond),
               "{0:>9}".format(nb[0][0]),
               "{0:>9}".format(nb[0][1]),
               file=outname)
+        if current_bond == 0:
+            print(nb)
         n += 1
     print("", file=outname)
     print("Angles", file=outname)
@@ -125,7 +130,7 @@ def write_lammps_file_periodic(coords, bonds, angles, dihedrals, ff_type,
             current_angle = 2
         elif ang_type == "sc4-oc23-sc4":
             current_angle = 3
-        elif ang_type == "sc4-oc23-hoy":
+        elif ang_type == "sc4-oc24-hoy":
             current_angle = 4
         elif ang_type == "oc24-sc4-oc24":
             current_angle = 5

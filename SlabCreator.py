@@ -84,7 +84,7 @@ def main():
         bonds_ext = extend_bonds(bonds, coords_ext, box, reprod, nat, nbonds)
         angles_ext = extend_thetas(angles, coords_ext, box, reprod, nat, nangles)
         dihedrals_ext = extend_dihedrals(dihedrals, coords_ext, box, reprod, nat, ndihed)
-        # impropers_ext = extend_impropers(impropers, coords_ext, pbc_box, reprod, nat, nimprp)
+        # impropers_ext = extend_impropers(impropers, coords_ext, box, reprod, nat, nimprp)
 
         write_lammps_file_periodic(coords_ext, bonds_ext, angles_ext, dihedrals_ext, ff_type,
                                    charges, masses, complete_sys_file, reprod, box, temp_type)
@@ -114,8 +114,10 @@ def getInfos():
     reprod.append([int(templist[0]), int(templist[1])])
     # print(reprod)
     sys.stdin.readline()
+    sys.stdin.readline()
+    sys.stdin.readline()
     tempbox = sys.stdin.readline().strip(" ").split()
-    pbc_box.append([int(tempbox[0]), int(tempbox[1]), int(tempbox[2])])
+    pbc_box.append([float(tempbox[0]), float(tempbox[1]), float(tempbox[2])])
     # print(box)
     sys.stdin.readline()
     ff_file = sys.stdin.readline().strip()
