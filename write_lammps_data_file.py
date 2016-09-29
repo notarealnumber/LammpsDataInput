@@ -336,9 +336,9 @@ def write_lammps_file_nonperiodic(single_mol_info, types,
                   "{:6d}".format(imol + 1),
                   "{:4d}".format(ntype),
                   "{:9.5f}".format(single_mol_info[iat][2]),
-                  "{:17.10f}".format(coords[imol * nat_per_mol + iat][0]),
-                  "{:17.10f}".format(coords[imol * nat_per_mol + iat][1]),
-                  "{:17.10f}".format(coords[imol * nat_per_mol + iat][2]),
+                  "{:17.10f}".format(coords[imol * nat_per_mol + iat, 0]),
+                  "{:17.10f}".format(coords[imol * nat_per_mol + iat, 1]),
+                  "{:17.10f}".format(coords[imol * nat_per_mol + iat, 2]),
                   "  0   0   0 # ", single_mol_info[iat][1],
                   file=outname)
 
@@ -347,7 +347,7 @@ def write_lammps_file_nonperiodic(single_mol_info, types,
     print("", file=outname)
     for imol in range(nmol):
         for ibond in range(nbonds):
-            print("{:10d}".format(imol * nbonds + ibond),
+            print("{:10d}".format(imol * nbonds + ibond + 1),
                   "{:5d}".format(bond_type[ibond]),
                   "{:10d}".format(bonds[ibond][0] + imol * nat_per_mol),
                   "{:10d}".format(bonds[ibond][1] + imol * nat_per_mol),
@@ -357,7 +357,7 @@ def write_lammps_file_nonperiodic(single_mol_info, types,
     print("", file=outname)
     for imol in range(nmol):
         for iangle in range(nangles):
-            print("{:10d}".format(imol * nangles + iangle),
+            print("{:10d}".format(imol * nangles + iangle + 1),
                   "{:5d}".format(angle_type[iangle]),
                   "{:10d}".format(angles[iangle][0] + imol * nat_per_mol),
                   "{:10d}".format(angles[iangle][1] + imol * nat_per_mol),
@@ -369,7 +369,7 @@ def write_lammps_file_nonperiodic(single_mol_info, types,
     print("", file=outname)
     for imol in range(nmol):
         for idihed in range(ndihedrals):
-            print("{:10d}".format(imol * ndihedrals + idihed),
+            print("{:10d}".format(imol * ndihedrals + idihed + 1),
                   "{:5d}".format(dihedral_type[idihed]),
                   "{:10d}".format(dihedrals[idihed][0] + imol * nat_per_mol),
                   "{:10d}".format(dihedrals[idihed][1] + imol * nat_per_mol),

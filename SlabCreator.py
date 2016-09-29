@@ -9,6 +9,7 @@ def main():
     single_mol_info = []
 
     periodic_or_not, \
+        extension, \
         single_mol_file, \
         complete_sys_file, \
         reprod, \
@@ -21,7 +22,11 @@ def main():
 
         bonds, ff_type, charges, masses, angles, dihedrals, \
             impropers, donors, acceptors, nonbonds = readpsf(single_mol_file)
-        elements, coords = readpdb(complete_sys_file)
+
+        if extension == "pdb":
+            elements, coords = readpdb(complete_sys_file)
+        elif extension == "xyz":
+            elements, coords = readxyz(complete_sys_file)
 
         # These variables give the number of atoms, angles, bonds etc of the original structure.
         # nat = len(elements)
@@ -33,6 +38,7 @@ def main():
         # nacc = len(acceptors)
         # nnonb = len(nonbonds)
 
+        print(len(elements))
         for i in range(len(charges)):
             single_mol_info.append([elements[i], ff_type[i], charges[i], masses[i]])
             print(single_mol_info[-1])
@@ -109,6 +115,8 @@ def getInfos():
         sys.stdin.readline()
     filename_total_sys = sys.stdin.readline().strip()
     sys.stdin.readline()
+    extension = sys.stdin.readline().strip()
+    sys.stdin.readline()
     sys.stdin.readline()
     templist = sys.stdin.readline().strip(" ").split()
     reprod.append([int(templist[0]), int(templist[1])])
@@ -127,7 +135,7 @@ def getInfos():
 
     box = np.array(pbc_box)
 
-    return slab_or_mol, filename_single_mol, filename_total_sys, reprod, box, ff_file, ff_name
+    return slab_or_mol, extension, filename_single_mol, filename_total_sys, reprod, box, ff_file, ff_name
 
 
 main()
